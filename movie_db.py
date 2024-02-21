@@ -45,7 +45,7 @@ class Movie_db(object):
         query = '''
             SELECT m.title, m.year
             FROM Movies as m, (SELECT *
-                                FROM Moies as rw WHERE rw.title = 'Rogue One: A Star Wars Story') as mRW
+                                FROM Movies as rw WHERE rw.title = 'Rogue One: A Star Wars Story') as mRW
                                 WHERE m.year = mRW.year AND m.rank > mRW.rank ORDER BY m.title ASC
         '''
         self.cur.execute(query)
@@ -55,7 +55,7 @@ class Movie_db(object):
     def q3(self):
         query = '''
             SELECT fname, lname, mr.creds
-            FROM Actors as act, (Select c.aid, count(role) as cred FROM Moives as m, Cast as c WHERE m.mid = c.mid AND m.title LIKE '%Star Wars%' GROUP BY c.aid Having cred >=1) mr
+            FROM Actors as act, (Select c.aid, count(role) as cred FROM Movies as m, Cast as c WHERE m.mid = c.mid AND m.title LIKE '%Star Wars%' GROUP BY c.aid Having cred >=1) mr
             WHERE act.aid = mr.aid
             ORDER By mr.creds DESC, a.lname ASC, a.fname ASC
         '''
