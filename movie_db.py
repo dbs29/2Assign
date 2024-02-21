@@ -109,7 +109,7 @@ class Movie_db(object):
                     GROUP BY c.mid) fm,
                     (SELECT c.mid, count(*) gencnt
                     FROM Cast as c, Actors a WHERE a.aid = c.aid AND a.gender = 'Male' Group BY c.mid) ma
-                    WHERE m.mid = fm.mid AND m.mid = ma.mid AND ma.gencnt > ma.gencnt
+                    WHERE m.mid = fm.mid AND m.mid = ma.mid AND fm.gencnt > ma.gencnt
                     ORDER BY m.title
         '''
         self.cur.execute(query)
