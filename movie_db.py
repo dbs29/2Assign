@@ -31,7 +31,10 @@ class Movie_db(object):
 
     def q1(self):
         query = '''
-            
+        SELECT fname, lname
+        FROM Actors as a, Movies as m80, Movies as m2000, Cast as c80, Cast as c2000
+        WHERE a.aid = c80.aid AND m80.mid = c80.mid AND m80.year BETWEEN 1980 AND 1990 AND a.aid = c2000.aid AND m2000.mid = c2000.mid AND m2000.year >= 2000
+        ORDER BY lname ASC, fname ASC
         '''
         self.cur.execute(query)
         all_rows = self.cur.fetchall()
