@@ -57,7 +57,7 @@ class Movie_db(object):
             SELECT fname, lname, mr.cred
             FROM Actors as act, (Select c.aid, count(role) as cred FROM Movies as m, Cast as c WHERE m.mid = c.mid AND m.title LIKE '%Star Wars%' GROUP BY c.aid Having cred >=1) mr
             WHERE act.aid = mr.aid
-            ORDER By mr.cred DESC, a.lname ASC, a.fname ASC
+            ORDER By mr.cred DESC, act.lname ASC, act.fname ASC
         '''
         self.cur.execute(query)
         all_rows = self.cur.fetchall()
@@ -78,7 +78,12 @@ class Movie_db(object):
 
     def q5(self):
         query = '''
-            
+            SELECT d.fname, d.lname, count(*) as f
+            FROM Movies as m, Movie_Director as md, Directors as d
+            WHERE m.mid = md.mid AND md.did = d.did
+            GROUP BY d.lname, d.fname
+            ORDER BY f DESC, d.lname, d.fname
+            LIMIT 10
         '''
         self.cur.execute(query)
         all_rows = self.cur.fetchall()
@@ -86,7 +91,11 @@ class Movie_db(object):
 
     def q6(self):
         query = '''
-            
+            SELECT m.title, count(DISTINCT c.aid) as number
+            FROM Movies as m, Cast as c
+            WHERE BY c.mid
+            ORDER BY number DESC
+            LIMIT 11
         '''
         self.cur.execute(query)
         all_rows = self.cur.fetchall()
@@ -94,7 +103,13 @@ class Movie_db(object):
 
     def q7(self):
         query = '''
-            
+            SELECT m.title, fm.gencnt, ma.gencnt
+                FROM Movies as m, (SELECT c.mid, count(*) gencnt FROM cast as c, actors a WHERE c.aid = a.aid and a.gender = 'Female' 
+                    GROUP BY c.mid) fm,
+                    (SELECT c.mid, count(*) gencnt
+                    FROM Cast as c, Actors a WHERE a.aid = c.aid AND a.gender = 'Male' Group BY c.mid) ma
+                    WHERE m.mid = fm mid AND m.mid = ma.mid AND mf.gencnt > ma.gencnt
+                    ORDER BY m.title
         '''
         self.cur.execute(query)
         all_rows = self.cur.fetchall()
@@ -102,7 +117,11 @@ class Movie_db(object):
 
     def q8(self):
         query = '''
-            
+            SELECT a.fname, a.lname, count(DISTINCT md.did) as cnt
+            FROM Actors as a, Movie_Director as md, Cast as c
+            WHERE a.aid = c.aid AND c.mid = md.mid AND a.aid != md.did
+            GROUP BY a.fname, a.lname having count(DISTINCT md.did) >= 7
+            ORDER BY cnt DESC
         '''
         self.cur.execute(query)
         all_rows = self.cur.fetchall()
