@@ -54,7 +54,7 @@ class Movie_db(object):
 
     def q3(self):
         query = '''
-            SELECT fname, lname, mr.creds
+            SELECT fname, lname, mr.cred
             FROM Actors as act, (Select c.aid, count(role) as cred FROM Movies as m, Cast as c WHERE m.mid = c.mid AND m.title LIKE '%Star Wars%' GROUP BY c.aid Having cred >=1) mr
             WHERE act.aid = mr.aid
             ORDER By mr.cred DESC, a.lname ASC, a.fname ASC
@@ -68,9 +68,9 @@ class Movie_db(object):
         query = '''
             SELECT DISTINCT a.fname, a.lname
             FROM Actors as act, Movies as movie, Cast as cast
-            WHERE act.aid = cast.aid AND cast.mid = movie.mid AND movie.year < 1980 AND act.aid NOT IN (SELECT cast.aid FROM Cast cast
+            WHERE act.aid = cast.aid AND cast.mid = movie.mid AND movie.year < 1980 and act.aid NOT IN (SELECT cast.aid FROM Cast cast
                             WHERE cast.mid in (SELECT movie.mid FROM Movies movie WHERE movie.year >= 1980))
-                            ORDER BY lname ASC, fname ASC
+            ORDER BY lname ASC, fname ASC
         '''
         self.cur.execute(query)
         all_rows = self.cur.fetchall()
