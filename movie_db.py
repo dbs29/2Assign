@@ -68,8 +68,9 @@ class Movie_db(object):
         query = '''
             SELECT DISTINCT a.fname, a.lname
             FROM Actors as act, Movies as movie, Cast as cast
-            WHERE act.aid = cast.aid AND cast.mid = movie.mid AND movie.year < 1980 AND act.aid NOT IN (SELECT cast.aid FROM Cast cast
-                            WHERE cast.mid in (SELECT movie.mid FROM Movies movie WHERE movie.year >= 1980))
+            WHERE act.aid = cast.aid AND cast.mid = movie.mid AND movie.year < 1980 
+                AND act.aid NOT IN (SELECT cast.aid FROM Cast cast
+                            WHERE cast.mid IN (SELECT movie.mid FROM Movies movie WHERE movie.year >= 1980))
             ORDER BY lname ASC, fname ASC
         '''
         self.cur.execute(query)
