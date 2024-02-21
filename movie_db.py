@@ -157,17 +157,16 @@ class Movie_db(object):
 
     def q11(self):
         query = '''
-            DROP VIEW IF EXISTS bacon
-        '''
+                DROP VIEW IF EXISTS bacon
+                '''
         self.cur.execute(query)
 
-
         query = '''
-            CREATE VIEW bacon as
-                SELECT DISTINCT a.aid
-                FROM Actors as a, Movies as m, Cast as c
-                WHERE a.aid = c.aid AND c.mid = m.mid AND a.fname = 'Kevin' AND a.lname = 'Bacon'
-            '''
+                CREATE VIEW bacon as
+                    SELECT DISTINCT a.aid
+                    FROM Actors as a, Movies as m, Cast as c
+                    WHERE a.aid = c.aid AND c.mid = m.mid AND a.fname = 'Kevin' AND a.lname = 'Bacon'
+                '''
         self.cur.execute(query)
 
         query = '''
@@ -175,26 +174,25 @@ class Movie_db(object):
                 '''
         self.cur.execute(query)
 
-        query= '''
-                CREATE VIEW baconfilms as 
-                    SELECT a.aid
-                    FROM ACTORS as a, Movies as m, Cast as c, (SELECT DISTINCT m.title as title
-                                                                FROM Actors as a, Movies as m, Cast as c
-                                                                WHERE a.aid = c.aid AND c.mid = m.mid AND a.fname = 'Kevin' AND a.lname = 'Bacon') as films
-                            WHERE films.title = m.title AND a.aid = c.aid AND c.mid = m.mid AND a.aid NOT IN (SELECT * FROM bacon)
-                    '''
-                self.cur.execute(query)
+        query = '''
+                CREATE VIEW baconfilms as
+                    SELECT a.aid 
+                    FROM Actors as a, Movies as m, Cast as c, (SELECT DISTINCT m.title as title
+                                                  FROM Actors as a, Movies as m, Cast as c
+                                                  WHERE a.aid = c.aid AND c.mid = m.mid AND a.fname = 'Kevin' AND a.lname = 'Bacon') as films
+                    WHERE films.title = m.title AND a.aid = c.aid AND c.mid = m.mid AND a.aid NOT IN (SELECT * FROM bacon)                          
+                '''
+        self.cur.execute(query)
 
-                query = '''
+
+        query = '''
                 SELECT DISTINCT a.fname, a.lname
                 FROM Actors as a, Movies as m, Cast as c, (SELECT DISTINCT m.title as title
                                                            FROM Actors as a, Movies as m, Cast as c, baconfilms as bf
                                                            WHERE a.aid = c.aid AND c.mid = m.mid AND bf.aid = c.aid) as bf1
                 WHERE bf1.title = m.title AND a.aid = c.aid AND c.mid = m.mid AND a.aid NOT IN (SELECT * FROM baconfilms) AND a.aid NOT IN (SELECT * FROM bacon)            
                 ORDER BY lname, fname
-                '''       
-
-
+                '''
         self.cur.execute(query)
         all_rows = self.cur.fetchall()
         return all_rows
