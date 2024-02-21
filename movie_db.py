@@ -93,7 +93,8 @@ class Movie_db(object):
         query = '''
             SELECT m.title, count(DISTINCT c.aid) as number
             FROM Movies as m, Cast as c
-            WHERE BY c.mid
+            WHERE m.mid = c.mid
+            GROUP BY c.mid
             ORDER BY number DESC
             LIMIT 11
         '''
@@ -108,7 +109,7 @@ class Movie_db(object):
                     GROUP BY c.mid) fm,
                     (SELECT c.mid, count(*) gencnt
                     FROM Cast as c, Actors a WHERE a.aid = c.aid AND a.gender = 'Male' Group BY c.mid) ma
-                    WHERE m.mid = fm mid AND m.mid = ma.mid AND mf.gencnt > ma.gencnt
+                    WHERE m.mid = fm.mid AND m.mid = ma.mid AND mf.gencnt > ma.gencnt
                     ORDER BY m.title
         '''
         self.cur.execute(query)
@@ -130,7 +131,14 @@ class Movie_db(object):
 
     def q9(self):
         query = '''
-            
+            SELECT DISTINCT a.fname, a.lname, count(*) as cnt
+            FROM Actors as a, Movies as m, (SELECT DISTINCT a.aid, MIN(m.year) as debut_yr
+                                            FROM Actors as a, Movies as m, Cast as c
+                                            WHERE a.aid = c.aid AND c.mid = m.mid
+                                            GROUP By a.aid) amc
+                                            WHERE m.year = amc.debut_yr and a.aid = amc.aid and a.fname like 'D%'
+                                            GROUP BY a.aid
+                                            ORDER BY cnt DESC, a.fname, a.lname
         '''
         self.cur.execute(query)
         all_rows = self.cur.fetchall()
